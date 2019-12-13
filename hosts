@@ -1,0 +1,8 @@
+[t_rewrite]
+t-rewrite-cl
+t-rewrite-srv
+
+[consul]
+consul1
+consul2
+consul3

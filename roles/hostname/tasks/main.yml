@@ -1,0 +1,32 @@
+---
+
+- name: set hostname
+  hostname:
+    name: "{{ targetHostname }}"
+
+- name: Add hostname to /etc/hosts as localhost
+  lineinfile:
+    path: /etc/hosts
+    regexp: '^127\.0\.0\.1'
+    line: "127.0.0.1 localhost {{ targetHostname }}"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: /etc/ansibleRoles.txt
+  file:
+    path: /etc/ansibleRoles.txt
+    state: touch
+  changed_when: False
+
+- name: register role init1-hostname
+  lineinfile:
+    dest: "/etc/ansibleRoles.txt"
+    regexp: ':init1-hostname'
+    line: "{{ ansible_date_time.iso8601 }} :init1-hostname"
+    state: present
+    backup: yes
+  changed_when: False
+
+
+...

@@ -1,0 +1,70 @@
+---
+# ansible-playbook -i hosts --limit t_rewrite main.yml
+# ansible-playbook -i hosts --limit t_rewrite -t dbg2  main.yml
+# shows 52
+# ansible-playbook -i hosts --limit consul -t dbg2  main.yml
+# shows 42
+#
+# host-specific variables in host_vars
+#   ansible-playbook -i hosts --limit t_rewrite -t hostname2  main.yml
+      # PLAY [test1] *****************************************************************************************************************************************
+
+      # TASK [Gathering Facts] *******************************************************************************************************************************
+      # ok: [t-rewrite-cl]
+      # ok: [t-rewrite-srv]
+
+      # TASK [hostname2 : show hostname debug] ***************************************************************************************************************
+      # ok: [t-rewrite-cl] => {
+      #     "msg": "echo t-rewrite-cl.ioee2-cloud.com"
+      # }
+      # ok: [t-rewrite-srv] => {
+      #     "msg": "echo t-rewrite-srv.ioee2-cloud.com"
+      # }
+#
+# create new role
+#   ansible-galaxy init roles/profile
+#
+# gather facts
+#
+#   ansible all -i hosts -m gather_facts > ansible.facts
+#
+# ansible-playbook CLI-options
+# --list-tags
+# --list-tasks
+# --list-hosts
+# --skip-tags ....  # do not execute the specified tags
+# --tags ...        # execute the specified tags
+
+- name: test1
+  hosts: all
+  become: yes
+  become_method: sudo
+  gather_facts: true   # not sure whether it can be done if python is not installed
+
+  # not required
+  # vars_files:
+  #     - group_vars/all
+
+  tasks:
+  - name: dbg
+    debug:
+      msg: " echo {{ message }}"
+
+  - name: dbg2
+    debug:
+      msg: "echo dbg2 {{message}}"
+    tags:
+      - dbg2
+
+  roles:
+  - name: profile
+    roles:
+    - profile
+    tags:
+      - profile
+
+  - name: hostname2
+    roles:
+    - hostname2
+    tags:
+      - hostname2

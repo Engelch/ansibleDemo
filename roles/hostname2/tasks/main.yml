@@ -1,0 +1,9 @@
+---
+# tasks file for roles/hostname2
+
+- name: show hostname debug
+  debug:
+    msg:
+      - "echo {{ FQDN }}"
+      - "echo jotto is {{ jotto }}"
+      # - "echo timeout: {{ timeout }}"  # not directly possible, would require action plugin or vars plugin

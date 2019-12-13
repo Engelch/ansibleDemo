@@ -1,0 +1,107 @@
+---
+
+# /etc/hadm-zshrc:
+#   -   create our own mini zshrc that can also be used as a bashrc
+#   -   we create a different name so that we don't interfere with
+#       system scripts.
+#   -   It will we used in the add user loop. So we must make sure that
+#       even if userAddition is called on itself, that it will be created
+#       in advance.
+- name: /etc/common-profile.sh creation
+  copy:
+    src: common-profile.sh
+    dest: /etc/common-profile.sh
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+
+- name: s-link common-profile /root.zshrc
+  file:
+    src: /etc/common-profile.sh
+    dest: /root/.zshrc
+    force: yes
+    state: link
+
+- name: s-link common-profile /root/.bashrc
+  file:
+    src: /etc/common-profile.sh
+    dest: /root/.bashrc
+    force: yes
+    state: link
+
+- name: .vimrc
+  copy:
+    src: dot.vimrc
+    dest: /etc/vimrc
+    owner: root
+    group: users
+    mode: 0644
+    backup: yes
+
+#########
+
+# let's always use wheel, even it is ubuntu/debian
+
+- name: groupadd wheel
+  group:
+    name: wheel
+    state: present
+
+# adds the line if not existing
+# corrects the line if existing
+- name: sudoers setup wheel NOPASSWD
+  lineinfile:
+    path: /etc/sudoers
+    regexp: '^%wheel.*'
+    line: "%wheel	ALL=(ALL) NOPASSWD:ALL"
+    validate: 'visudo -cf %s'
+  # when: wheelSudoers.rc != 0
+
+#########
+
+- name: check for /etc/environment
+  stat:
+    path: /etc/environment
+  register: envFileE
+
+- name: environment file l10n
+  shell: grep LC_CTYPE /etc/environment
+  ignore_errors: true
+  register: envFile
+  changed_when: envFile.rc != 0
+  when: envFileE.stat.exists
+
+- name: add LC_CTYPE
+  lineinfile:
+    path: /etc/environment
+    line: "LC_CTYPE=C.UTF-8"
+  when:
+    - envFileE.stat.exists
+    - envFile.changed
+
+- name: add LC_ALL
+  lineinfile:
+    path: /etc/environment
+    line: "LC_ALL=C.UTF-8"
+    state: absent
+  when:
+    - envFileE.stat.exists
+    - envFile.changed
+
+- name: /etc/ansibleRoles.txt
+  file:
+    path: /etc/ansibleRoles.txt
+    state: touch
+  changed_when: False
+
+- name: register role init1-profile
+  lineinfile:
+    dest: "/etc/ansibleRoles.txt"
+    regexp: ':init1-profile'
+    line: "{{ ansible_date_time.iso8601 }} :init1-profile"
+    state: present
+    backup: yes
+  changed_when: False
+
+...
