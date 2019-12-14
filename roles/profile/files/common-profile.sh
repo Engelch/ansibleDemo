@@ -35,6 +35,8 @@
 #  - common-profile can be used on its own as a default profile for bash and zsh.
 #
 # RELEASES:
+# 1.5.1
+# - TeX-specific (OSX) path creation
 # 1.4.12
 # - PS1 as 2 line prompt
 # 1.4.11
@@ -74,7 +76,7 @@
 # 1.0.0
 # - cleanup
 
-export COMMONRC_VERSION="1.4.12"
+export COMMONRC_VERSION="1.5.1"
 export COMMONRC_FILE=${COMMONRC_FILE:-/etc/common-profile.sh}
 
 export HISTSIZE=8000
@@ -147,8 +149,24 @@ for POTENTIAL_DIR in \
    /mnt/c/Windows/System32/WindowsPowerShell/v1.0 \
    /mnt/c/Users/engelch/AppData/Local/Microsoft/WindowsApps
 do
-    test -d "$POTENTIAL_DIR/." &&  PATH=$PATH:"$POTENTIAL_DIR"
+    test -d "$POTENTIAL_DIR/." &&  PATH="$POTENTIAL_DIR":$PATH
 done
+
+# executing the finds takes time. So, let's cache the result.
+TEXBASEDIR=${TEXBASEDIR:-/usr/local/texlive}
+TEXPATHFILE="$HOME/.bash.tex.path"
+if [ -d "$TEXBASEDIR" -a ! -f "$TEXPATHFILE" ] ; then
+   echo creating TEXPATHFILE $TEXPATHFILE...
+   find "$TEXBASEDIR" -type d -name '*bin' | egrep '.*/bin$' > $TEXPATHFILE
+   find "$TEXBASEDIR" -type d -name '*linux' | egrep '.*linux$' >> $TEXPATHFILE
+   find "$TEXBASEDIR" -type d -name '*darwin' | egrep '.*darwin$' >> $TEXPATHFILE
+fi
+if [ -f "$TEXPATHFILE" ] ; then
+   for line in $(egrep -v '^[[:space:]]*$' $TEXPATHFILE) ; do
+      PATH=$PATH:"$line"
+   done
+fi
+unset line
 
 # not so easy as expected to determine the actual shell type
 CALC_SHELL=$(ps | grep $$ | grep -v grep | sed 's/-l$//' | awk '{ print $NF }' | sed 's/^-//')
