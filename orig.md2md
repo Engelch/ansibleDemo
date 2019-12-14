@@ -1,0 +1,1 @@
+grep -v LaTeX README.org.md  > README.md

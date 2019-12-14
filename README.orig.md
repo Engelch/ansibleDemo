@@ -34,6 +34,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ## File & directory structure
 
+\small <!-- LaTeX -->
 ```bash
 hosts
 ./group_vars/all
@@ -52,6 +53,7 @@ hosts
 ./host_vars/t-rewrite-cl.yml
 ./host_vars/t-rewrite-srv.yml
 ```
+\normalsize <!-- LaTeX -->
 
 1. `group_vars` contains variables for a group or all hosts.
 
@@ -62,6 +64,7 @@ hosts
 
 ## hosts file
 
+\small <!-- LaTeX -->
 ```bash
 [t_rewrite]
 t-rewrite-cl
@@ -72,6 +75,7 @@ consul1
 consul2
 consul3
 ```
+\normalsize <!-- LaTeX -->
 
 Hint: ansible issued a warning if the group name *t_rewrite* was written with a dash, e.g. *t-rewrite*.
 
@@ -79,37 +83,47 @@ Hint: ansible issued a warning if the group name *t_rewrite* was written with a 
 
 ### For all hosts in the hosts file
 
+\small <!-- LaTeX -->
 ```bash
 ansible-playbook -i hosts main.yml
 ```
+\normalsize <!-- LaTeX -->
 
 ### For specific hosts
 
 Important is the comma at the end of the host list.
 
+\small <!-- LaTeX -->
 ```bash
 ansible-playbook -i consul1, main.yml
 ```
+\normalsize <!-- LaTeX -->
 
 Multiple hosts can be separated by comma too.
 
+\small <!-- LaTeX -->
 ```bash
 ansible-playbook -i consul1,consul2, main.yml
 ```
+\normalsize <!-- LaTeX -->
 
 ### For some grouped hosts
 
+\small <!-- LaTeX -->
 ```bash
 ansible-playbook -i hosts --limit t_rewrite main.yml
 ```
+\normalsize <!-- LaTeX -->
 
 ### Tagged Execution
 
 This call executes the commands in the main.yml file for all hosts in the `./hosts` file.
 
+\small <!-- LaTeX -->
 ```bash
 ansible-playbook -i hosts --limit t_rewrite -t dbg2  main.yml
 ```
+\normalsize <!-- LaTeX -->
 
 ## Variables
 
@@ -127,6 +141,7 @@ This call executs all commands tagged with dbg2 for all hosts specified in `./ho
 
 Here an example for host-specific variables.
 
+\small <!-- LaTeX -->
 ```bash
   ansible-playbook -i hosts --limit t_rewrite -t hostname2  main.yml
     PLAY [test1] ******
@@ -141,14 +156,17 @@ Here an example for host-specific variables.
         "msg": "echo t-rewrite-srv.ioee2-cloud.com"
     }
 ```
+\normalsize <!-- LaTeX -->
 
 ## Roles
 
 create new role
 
+\small <!-- LaTeX -->
 ```bash
 ansible-galaxy init roles/profile
 ```
+\normalsize <!-- LaTeX -->
 
 This command is helpful, because it shows a full-blown directory tree for a role. Some, good documentation is contained in the created README.md file.
 
@@ -156,6 +174,7 @@ This command is helpful, because it shows a full-blown directory tree for a role
 
 This file can contain tasks and roles:
 
+\small <!-- LaTeX -->
 ```bash
 ---
 
@@ -189,17 +208,21 @@ This file can contain tasks and roles:
     tags:
       - hostname2
 ```
+\normalsize <!-- LaTeX -->
 
 ## Gather Facts
 
 gather facts
 
+\small <!-- LaTeX -->
 ```bash
 ansible all -i hosts -m gather_facts > ansible.facts
 ```
+\normalsize <!-- LaTeX -->
 
 ## ansible-playbook CLI-options
 
+\small <!-- LaTeX -->
 ```bash
 --list-tags
 --list-tasks
@@ -207,6 +230,7 @@ ansible all -i hosts -m gather_facts > ansible.facts
 --skip-tags ....  # do not execute the specified tags
 --tags ...        # execute the specified tags
 ```
+\normalsize <!-- LaTeX -->
 
 
 ## Execution parameters
@@ -216,9 +240,11 @@ Access requires either the action plugin or vars plugin.
 
 Here is an example file:
 
+\small <!-- LaTeX -->
 ```bash
 [defaults]
 
 timeout = 33
 interpreter_python = /usr/bin/python3
 ```
+\normalsize <!-- LaTeX -->
