@@ -18,6 +18,7 @@
   - [Variables](#variables)
     - [Example for host-specific variables](#example-for-host-specific-variables)
   - [Roles](#roles)
+  - [Main main.yml file](#main-mainyml-file)
   - [Gather Facts](#gather-facts)
   - [ansible-playbook CLI-options](#ansible-playbook-cli-options)
   - [Execution parameters](#execution-parameters)
@@ -133,6 +134,44 @@ ansible-galaxy init roles/profile
 ```
 
 This command is helpful, because it shows a full-blown directory tree for a role. Some, good documentation is contained in the created README.md file.
+
+## Main main.yml file
+
+This file can contain tasks and roles:
+
+```
+---
+
+- name: test1
+  hosts: all
+  become: yes
+  become_method: sudo
+  gather_facts: true   # not sure whether it can be done if python is not installed
+
+  tasks:
+  - name: dbg
+    debug:
+      msg: " echo {{ message }}"
+
+  - name: dbg2
+    debug:
+      msg: "echo dbg2 {{message}}"
+    tags:
+      - dbg2
+
+  roles:
+  - name: profile
+    roles:
+    - profile
+    tags:
+      - profile
+
+  - name: hostname2
+    roles:
+    - hostname2
+    tags:
+      - hostname2
+```
 
 ## Gather Facts
 
